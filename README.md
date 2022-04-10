@@ -64,6 +64,9 @@ Explain what each test does and why
         a. Test DAO (Data Access Object) and Repository classes.
         b. Add testing for the error messages.
         c. Add End-To-End testing for the Fragments navigation.
+        
+        ![image](https://user-images.githubusercontent.com/6456871/162628606-1825a781-3561-400e-bd0b-a4563587c3f2.png)
+
 
 
 ## Student Deliverables:
