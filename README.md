@@ -42,9 +42,9 @@ Explain what each test does and why
 
 ```
 1.androidTest
-        //TODO: Students explain their testing here.
+        androidTests run on the emulator or device
 2. test
-        //TODO: Students explain their testing here.
+        tests which can run on the JVM
 ```
 
 ## Project Instructions
