@@ -42,9 +42,9 @@ Explain what each test does and why
 
 ```
 1.androidTest
-        //TODO: Students explain their testing here.
+        androidTests run on the emulator or device
 2. test
-        //TODO: Students explain their testing here.
+        tests which can run on the JVM
 ```
 
 ## Project Instructions
@@ -64,12 +64,28 @@ Explain what each test does and why
         a. Test DAO (Data Access Object) and Repository classes.
         b. Add testing for the error messages.
         c. Add End-To-End testing for the Fragments navigation.
+        
+   
+
 
 
 ## Student Deliverables:
 
 1. APK file of the final project.
 2. Git Repository with the code.
+
+![image](https://user-images.githubusercontent.com/6456871/162629213-3a2381fb-e57b-4bb4-8668-3121c5b5d123.png)
+![image](https://user-images.githubusercontent.com/6456871/162629322-8c5e3c72-bc7e-4d83-9722-0299f891d82f.png)
+![image](https://user-images.githubusercontent.com/6456871/162628606-1825a781-3561-400e-bd0b-a4563587c3f2.png)
+ ![image](https://user-images.githubusercontent.com/6456871/162628819-f79d64f5-549d-4826-85dc-0e9b1318577f.png)
+ ![image](https://user-images.githubusercontent.com/6456871/162628867-05792981-e72a-481a-b4f3-5d3a84d474b0.png)
+ ![image](https://user-images.githubusercontent.com/6456871/162628968-38343fb1-2d5e-4dfc-8cb4-51f8e32aa511.png)
+ ![image](https://user-images.githubusercontent.com/6456871/162629046-ed9a0a1a-2a6a-4535-bf79-48bee89741a7.png)
+![image](https://user-images.githubusercontent.com/6456871/162629086-69555201-a882-4a2a-bc73-e3a87b11cb8d.png)
+
+
+
+
 
 ## Built With
 
