@@ -1,6 +1,7 @@
 package com.udacity.project4.locationreminders.reminderslist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.android.architecture.blueprints.todoapp.MainCoroutineRule
@@ -73,6 +74,17 @@ class RemindersListViewModelTest {
 
 
     }
+
+    @Test
+    fun returnError() {
+        fakeRepository = FakeDataSource(null)
+        reminderListViewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), fakeRepository)
+        fakeRepository.setReturnError(true)
+
+        reminderListViewModel.loadReminders()
+        assertThat(reminderListViewModel.showSnackBar.getOrAwaitValue(), `is`("Reminders not found"))
+    }
+
 
 
 }

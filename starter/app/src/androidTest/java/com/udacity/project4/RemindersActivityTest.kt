@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.rule.ActivityTestRule
 import com.google.android.material.internal.ContextUtils.getActivity
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
@@ -21,6 +22,7 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.not
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -40,7 +42,9 @@ class RemindersActivityTest :
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
 
-
+    @get:Rule
+    var activityTestRule: ActivityTestRule<RemindersActivity> =
+        ActivityTestRule(RemindersActivity::class.java)
 
     /**
      * As we use Koin as a Service Locator Library to develop our code, we'll also use Koin to test our code.
@@ -81,8 +85,8 @@ class RemindersActivityTest :
 
 
 //    TODO: add End to End testing to the app
-@Test
-fun saveReminder_showToast_Test(){
+    @Test
+    fun saveReminder_showToast_Test(){
     val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
     onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
     onView(withId(R.id.addReminderFAB)).perform(click())
@@ -100,5 +104,20 @@ fun saveReminder_showToast_Test(){
 
     activityScenario.close()
 }
+
+    @Test
+    fun checkSnackBar_test(){
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
+        onView(withId(R.id.addReminderFAB)).perform(click())
+        onView(withId(R.id.reminderDescription)).perform(replaceText("description"))
+        onView(withId(R.id.saveReminder)).perform(click())
+        onView(withId(R.id.snackbar_text)).check(matches(withText(R.string.err_enter_title)))
+        Thread.sleep(4000)
+        onView(withId(R.id.reminderTitle)).perform(replaceText("title"))
+        onView(withId(R.id.saveReminder)).perform(click())
+        onView(withId(R.id.snackbar_text)).check(matches(withText(R.string.err_select_location)))
+        activityScenario.close()
+    }
 
 }

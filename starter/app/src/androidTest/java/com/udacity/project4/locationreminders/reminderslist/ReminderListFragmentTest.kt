@@ -22,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.not
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -122,6 +123,11 @@ class ReminderListFragmentTest {
         }
         launchFragmentInContainer<ReminderListFragment>(Bundle.EMPTY, R.style.AppTheme)
         onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
+    }
+
+    @After
+    fun stopDown() {
+        stopKoin()
     }
 
 

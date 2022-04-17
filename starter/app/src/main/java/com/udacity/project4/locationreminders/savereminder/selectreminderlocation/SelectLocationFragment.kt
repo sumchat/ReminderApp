@@ -5,6 +5,8 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -17,7 +19,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
@@ -27,6 +32,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
@@ -36,7 +42,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private val TAG: String = SelectLocationFragment::class.java.getSimpleName()
     private var isLocationSelected = false
-    private lateinit var pointOfInterest: PointOfInterest
+    //private  var pointOfInterest: PointOfInterest? = null
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var poiName: String? = null
 
 
 
@@ -73,17 +82,56 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         // Add a marker in Sydney and move the camera
         val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        //mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16f))
+       // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
         setMapLongClick(mMap)
-        //setMapStyle(mMap)
+        setMapStyle(mMap)
         mapPoiClick(mMap)
         onLocationSelected()
     }
 
     private fun setMapLongClick(mMap: GoogleMap) {
+        mMap.setOnMapLongClickListener { latLng ->
+            mMap.clear()
+            val location = getGeocodedAddress(latLng.latitude, latLng.longitude)
+            val marker = mMap.addMarker(
+                MarkerOptions()
+                    .position(latLng).title(location)
+            )
 
+            val zoomLevel = 15f
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel))
+            isLocationSelected = true
+            latitude = latLng.latitude
+            longitude = latLng.longitude
+            poiName = location
+            marker.showInfoWindow()
+        }
     }
+
+        private fun getGeocodedAddress(LATITUDE: Double, LONGITUDE: Double): String? {
+            var strAdd = ""
+            val geocoder = Geocoder(context, Locale.getDefault())
+            try {
+                val addresses: List<Address>? = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1)
+                if (addresses != null) {
+                    val returnedAddress: Address = addresses[0]
+                    val strReturnedAddress = StringBuilder("")
+                    for (i in 0..returnedAddress.maxAddressLineIndex) {
+                        strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n")
+                    }
+                    strAdd = strReturnedAddress.toString()
+                    //Log.v(" location address", strReturnedAddress.toString())
+                } else {
+                    //Log.v("location address", "No Address returned!")
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                //Log.v("location address", "Canont get Address!")
+            }
+            return strAdd
+        }
     private fun setMapStyle(mMap: GoogleMap) {
         try {
             // Customize the styling of the base map using a JSON object defined
@@ -116,7 +164,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(poi.latLng, zoomLevel))
            poiMarker.showInfoWindow()
            isLocationSelected = true
-           pointOfInterest = poi
+           latitude = poi.latLng.latitude
+           longitude = poi.latLng.longitude
+           //pointOfInterest = poi
+           poiName = poi.name
 
        }
     }
@@ -171,6 +222,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 }.show() }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && mMap != null)
+                    mMap?.isMyLocationEnabled = true
+
+    }
+
 
 
 
@@ -184,10 +245,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             if (isLocationSelected)
             {
-                _viewModel.latitude.value = pointOfInterest.latLng.latitude
-                _viewModel.longitude.value = pointOfInterest.latLng.longitude
-                _viewModel.reminderSelectedLocationStr.value = pointOfInterest.name
-                _viewModel.selectedPOI.value = pointOfInterest
+                _viewModel.latitude.value = latitude
+                _viewModel.longitude.value = longitude
+
+                _viewModel.reminderSelectedLocationStr.value = poiName
+               // _viewModel.selectedPOI.value = pointOfInterest
                 _viewModel.navigationCommand.postValue(NavigationCommand.Back)
                // _viewModel.navigationCommand.value = NavigationCommand.To(SelectLocationFragmentDirections.actionSelectLocationFragmentToSaveReminderFragment())
             }else{
@@ -206,15 +268,19 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         // TODO: Change the map type based on the user's selection.
         R.id.normal_map -> {
+            mMap!!.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
         }
         R.id.hybrid_map -> {
+            mMap!!.mapType = GoogleMap.MAP_TYPE_HYBRID
             true
         }
         R.id.satellite_map -> {
+            mMap!!.mapType = GoogleMap.MAP_TYPE_SATELLITE
             true
         }
         R.id.terrain_map -> {
+            mMap!!.mapType = GoogleMap.MAP_TYPE_TERRAIN
             true
         }
         else -> super.onOptionsItemSelected(item)

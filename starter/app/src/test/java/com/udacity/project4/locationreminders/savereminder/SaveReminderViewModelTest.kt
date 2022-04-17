@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.android.architecture.blueprints.todoapp.MainCoroutineRule
 import com.example.android.architecture.blueprints.todoapp.getOrAwaitValue
+import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,6 +57,22 @@ class SaveReminderViewModelTest {
         val reminder = getReminder()
         saveReminderViewModel.saveReminder(reminder)
         assertThat(saveReminderViewModel.showToast.getOrAwaitValue(), `is`("Reminder Saved !"))
+    }
+
+    @Test
+    fun saveReminderWithoutTitle() {
+        var reminder = ReminderDataItem(null, "description", "redlands", 34.08357, -117.14382)
+        saveReminderViewModel.validateAndSaveReminder(reminder)
+        assertThat(saveReminderViewModel.showSnackBarInt.getOrAwaitValue(),`is`(R.string.err_enter_title))
+
+    }
+
+    @Test
+    fun saveReminderWithoutLocation() {
+        var reminder = ReminderDataItem("title", "description", "", 34.08357, -117.14382)
+        saveReminderViewModel.validateAndSaveReminder(reminder)
+        assertThat(saveReminderViewModel.showSnackBarInt.getOrAwaitValue(),`is`(R.string.err_select_location))
+
     }
 
 }

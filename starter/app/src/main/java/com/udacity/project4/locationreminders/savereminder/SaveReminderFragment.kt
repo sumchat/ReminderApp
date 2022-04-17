@@ -44,7 +44,7 @@ class SaveReminderFragment : BaseFragment() {
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
-
+        //geofencingClient = LocationServices.getGeofencingClient(requireContext())
         setDisplayHomeAsUpEnabled(true)
 
         binding.viewModel = _viewModel
@@ -173,9 +173,10 @@ class SaveReminderFragment : BaseFragment() {
                     currentGeofenceData.longitude!!,
                     GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
                 )
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 // Set the expiration duration of the geofence. This geofence gets
                 // automatically removed after this period of time.
-                .setExpirationDuration(GeofencingConstants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                //.setExpirationDuration(GeofencingConstants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                 // Set the transition types of interest. Alerts are only generated for these
                 // transition. We track entry and exit transitions in this sample.
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
@@ -243,15 +244,6 @@ class SaveReminderFragment : BaseFragment() {
            // }
 
 
-           /* val intent = Intent(requireContext(), GeofenceBroadcastReceiver::class.java)
-            intent.action = GeofencingConstants.ACTION_GEOFENCE_EVENT
-
-            val geofencePendingIntent = PendingIntent.getBroadcast(
-                requireContext(),
-                0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )*/
 
             // First, remove any existing geofences that use our pending intent
            /* geofencingClient.removeGeofences(geofencePendingIntent)?.run {
