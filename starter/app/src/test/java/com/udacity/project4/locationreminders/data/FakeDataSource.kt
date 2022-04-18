@@ -10,27 +10,22 @@ class FakeDataSource(var reminders: MutableList<ReminderDTO>? = mutableListOf())
 //    TODO: Create a fake data source to act as a double to the real data source
     private var shouldReturnError = false
 
-    fun setReturnError(shouldReturn: Boolean) {
-        this.shouldReturnError = shouldReturn
+    fun setReturnError(value: Boolean) {
+        this.shouldReturnError = value
     }
 
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
         //TODO("Return the reminders")
 
-        if (shouldReturnError){
-            return Result.Error("Reminders not found", 404)
+       return if (shouldReturnError){
+             Result.Error("Reminders not found", 404)
         }else{
             reminders?.let { return Result.Success(it) }
-            return Result.Error(
+             Result.Error(
                 "Location reminder data not found"
             )
         }
 
-       /* reminders?.let { return Result.Success(it) }
-        return Result.Error(
-            "Location reminder data not found"
-        )*/
-         //return Result.Success(ArrayList(reminders))
 
     }
 
@@ -59,6 +54,18 @@ class FakeDataSource(var reminders: MutableList<ReminderDTO>? = mutableListOf())
 
     override suspend fun deleteAllReminders() {
         reminders?.clear()
+    }
+
+    override suspend fun deleteReminder(id: String):  Boolean? {
+        val reminder = reminders?.find { it.id == id }
+
+            if (reminder != null) {
+               return  reminders?.remove(reminder)
+            } else
+               return false
+        }
+
+        }
     }
 
 

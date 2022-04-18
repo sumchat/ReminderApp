@@ -79,5 +79,11 @@ class RemindersLocalRepositoryTest {
         assertThat(result.data.location, `is`(reminder.location))
     }
 
+    @Test
+    fun getReminder_Exception() = runBlocking {
+        val reminder = repository.getReminder("1") as Result.Error
+        assertThat(reminder, `is`(Result.Error("Reminder not found!")))
+    }
+
 
 }

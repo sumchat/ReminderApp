@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -39,7 +40,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
-    private lateinit var mMap: GoogleMap
+    private var mMap: GoogleMap? = null
     private val TAG: String = SelectLocationFragment::class.java.getSimpleName()
     private var isLocationSelected = false
     //private  var pointOfInterest: PointOfInterest? = null
@@ -85,9 +86,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         //mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16f))
        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        setMapLongClick(mMap)
-        setMapStyle(mMap)
-        mapPoiClick(mMap)
+        setMapLongClick(mMap!!)
+        setMapStyle(mMap!!)
+        mapPoiClick(mMap!!)
         onLocationSelected()
     }
 
@@ -174,7 +175,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
 
     private fun enableUserLocation() {
-        if (ActivityCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -197,7 +198,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             return
         }
 
-        mMap.isMyLocationEnabled = true
+        mMap?.isMyLocationEnabled   = true
     }
 
     override fun onRequestPermissionsResult(requestCode:Int, permissions:Array<String>, grantResults:IntArray)
